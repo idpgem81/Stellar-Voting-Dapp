@@ -1,37 +1,52 @@
-# Tiêu đề (Title)
-Ứng dụng DApp Bỏ phiếu kín trên Stellar (voting-contract)
+# Title
+Stellar Private Voting DApp (voting-contract)
 
-# Mô tả dự án (Description)
-Các hệ thống bầu cử truyền thống (cơ chế một-người-một-phiếu) thường không thể hiện được mức độ mong muốn thực sự của người bỏ phiếu đối với một lựa chọn cụ thể. Dự án này được xây dựng nhằm giải quyết hạn chế đó, đặc biệt phù hợp cho môi trường câu lạc bộ trường đại học hoặc tập thể lớp.
-Bằng cách triển khai cơ chế Bỏ phiếu kín trên mạng lưới blockchain Stellar (sử dụng ngôn ngữ Rust và Soroban SDK), hợp đồng thông minh này cho phép người bỏ phiếu không chỉ thể hiện họ muốn gì, mà còn mức độ họ khao khát điều đó ra sao. Hệ thống đảm bảo tính minh bạch,  đồng thời ngăn chặn việc một cá nhân hoặc nhóm nhỏ có thể dễ dàng thao túng kết quả.
+# Project Description
+Traditional voting systems (based on the one-person-one-vote mechanism) often fail to reflect the true intensity of voters’ preferences toward a specific option. This project was developed to address that limitation, making it particularly suitable for university clubs, student organizations, or classroom communities.
 
-# Tính năng cốt lõi (Features)
-Khởi tạo Bảo mật (Secure Initialization): Hợp đồng gắn quyền quản trị chặt chẽ với một tài khoản Admin (Ban chủ nhiệm) ngay khi triển khai, ngăn chặn mọi hành vi chiếm quyền trái phép.
+By implementing a private voting mechanism on the Stellar blockchain network (using Rust and the Soroban SDK), this smart contract allows voters not only to express what they want, but also how strongly they desire it. The system ensures transparency while preventing individuals or small groups from easily manipulating the final results.
 
-Cấp phát Tín chỉ (mint_credits): Quản trị viên có thể phân bổ "Điểm tín chỉ bầu cử" (Voting Credits) một cách minh bạch cho các thành viên hợp lệ trong hệ thống.
+# Core Features
+## Secure Initialization
+The contract tightly binds administrative authority to a designated Admin account (e.g., the executive board) immediately upon deployment, preventing unauthorized ownership takeover attempts.
 
-Chi phí Bỏ phiếu Phi tuyến tính (vote): Áp dụng công thức tính phí toàn phương: Chi phí = (Số phiếu bầu)². Điều này khiến cho việc dồn nhiều phiếu cho một sự kiện trở nên đắt đỏ hơn theo cấp số nhân, đóng vai trò như một cơ chế tự nhiên chống lại sự thao túng (anti-whale mechanism).
+## Voting Credit Allocation (`mint_credits`)
+Administrators can transparently distribute "Voting Credits" to eligible members within the system.
 
-Kiểm tra Minh bạch (Transparent Tracking): Các hàm chỉ đọc (get_credits, get_poll_votes) cho phép bất kỳ ai cũng có thể tra cứu số dư tín chỉ của thành viên và cập nhật kết quả bỏ phiếu hiện tại một cách công khai mà không tốn phí mạng lưới (gas fees).
+## Non-Linear Voting Cost (`vote`)
+The system applies a quadratic cost formula:
 
-Xác thực Chặt chẽ (Strict Authentication): Kế thừa hàm require_auth() của Soroban để đảm bảo mọi hành động thay đổi dữ liệu đều phải được ký xác nhận bằng mã hóa bởi đúng chủ sở hữu ví.
+```math
+Cost = (Number\ of\ Votes)^2
+```
 
-Liên kết Hợp đồng (Contract)
-Liên kết hợp đồng trên Stellar Expert (Mạng Testnet): https://stellar.expert/explorer/testnet/contract/CDOES5GHCFZGMXHIYORMRWOFQIOMNXEK3SUD2BSENNRSCZNSUGFGWKDL
+This means allocating multiple votes to a single option becomes exponentially more expensive, serving as a natural anti-whale and anti-manipulation mechanism.
 
-Ảnh chụp màn hình tương tác:
-Khởi tạo và Cấp tín chỉ: screenshot_deploy.png
-Thực hiện Bỏ phiếu thành công: screenshot_Invoke contract.png
+## Transparent Tracking
+Read-only functions (`get_credits`, `get_poll_votes`) allow anyone to publicly check members’ credit balances and current voting results without paying network gas fees.
 
-# Hướng phát triển trong tương lai (Future scopes)
+## Strict Authentication
+The contract leverages Soroban’s `require_auth()` function to ensure that every state-changing action is cryptographically signed and verified by the legitimate wallet owner.
 
-Tích hợp Giao diện (Front-end Integration): Xây dựng giao diện Web trực quan bằng React.js và kết nối với ví Stellar Freighter, giúp các thành viên bỏ phiếu dễ dàng mà không cần dùng lệnh Terminal hay nền tảng IDE.
+# Contract Link
+Contract on Stellar Expert (Testnet):  
+https://stellar.expert/explorer/testnet/contract/CDOES5GHCFZGMXHIYORMRWOFQIOMNXEK3SUD2BSENNRSCZNSUGFGWKDL
 
-Tích hợp Token thực tế (Real Token Integration): Nâng cấp "Điểm tín chỉ" ảo hiện tại tuân theo chuẩn Soroban Token Interface, cho phép sử dụng các tài sản tiền mã hóa thực (như USDC hoặc XLM) làm chi phí bỏ phiếu, áp dụng cho các mô hình quản trị tổ chức tự trị phi tập trung (DAO) quy mô lớn.
+## Interaction Screenshots
+- Initialization and Credit Minting: `screenshot_deploy.png`
+- Successful Voting Execution: `screenshot_Invoke contract.png`
+# Future Scope
 
-Bỏ phiếu có Thời hạn định kỳ (Time-bound Polls): Thêm logic để hỗ trợ nhiều sự kiện diễn ra cùng lúc với các mốc thời gian bắt đầu và kết thúc (deadline) chặt chẽ, dựa trên dữ liệu khối (ledger sequence) của Stellar.
+## Front-end Integration
+Develop a user-friendly web interface using React.js and integrate it with the Stellar Freighter Wallet, enabling members to vote easily without relying on Terminal commands or IDE platforms.
 
-# Thông tin tác giả (Profile)
-Họ và tên: Ngô Phạm Khánh Ngọc
-Chức danh: Sinh viên 
-Liên hệ/Github: (👉 Điền link Github hoặc Email của bạn vào đây)
+## Real Token Integration
+Upgrade the current virtual "Voting Credits" to comply with the Soroban Token Interface standard, allowing real crypto assets (such as USDC or XLM) to be used as voting costs for large-scale DAO governance models.
+
+## Time-Bound Polls
+Extend the contract logic to support multiple simultaneous voting events with strict start and end deadlines, based on Stellar ledger sequence data.
+
+# Author Profile
+- Full Name: Ngô Phạm Khánh Ngọc
+- Role: Student
+- Contact/GitHub: https://github.com/idpgem81
